@@ -1,5 +1,5 @@
 from pico2d import *
-from Map import Sky
+from Map import Map
 import game_world
 
 def handle_events():
@@ -15,13 +15,13 @@ def handle_events():
 
 def reset_world():
     global Running
-    global map
+    global BackGround
 
     Running = True
 
-    sky = Sky()
+    BackGround = Map()
 
-    game_world.add_object(sky)
+    game_world.add_object(BackGround)
 
 def update_world():
     game_world.update()
