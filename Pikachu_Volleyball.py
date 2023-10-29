@@ -21,7 +21,7 @@ def reset_world():
 
     BackGround = Map()
 
-    game_world.add_object(BackGround)
+    game_world.add_object(BackGround, 0)
 
 def update_world():
     game_world.update()
