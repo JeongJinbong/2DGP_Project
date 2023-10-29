@@ -1,6 +1,7 @@
 from pico2d import *
 from Map import Map
 import game_world
+from ball import Ball
 
 def handle_events():
     global Running
@@ -23,6 +24,10 @@ def reset_world():
 
     game_world.add_object(BackGround, 0)
 
+    ball = Ball(400, 300)
+
+    game_world.add_object(ball, 1)
+
 def update_world():
     game_world.update()
 
@@ -41,6 +46,6 @@ while Running:
     handle_events()
     update_world()
     render_world()
-    delay(0.01)
+    delay(0.1)
 # finalization code
 close_canvas()

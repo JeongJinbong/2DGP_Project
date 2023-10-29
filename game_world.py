@@ -16,6 +16,6 @@ def render():
 def remove_object(o):
     for layer in objects:
         if o in layer:
-           layer.remove(o)
-        return
+            layer.remove(o)
+            return
     raise ValueError('존재하지 않는 객체를 지울 수 없음')
