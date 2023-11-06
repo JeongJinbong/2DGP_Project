@@ -13,6 +13,8 @@ def handle_events():
             Running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             Running = False
+        else:
+            Pikachu.handle_event(event)
 
 
 def reset_world():
