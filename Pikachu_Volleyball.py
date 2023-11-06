@@ -1,6 +1,7 @@
 from pico2d import *
 from Map import Map
 import game_world
+from Pikachu import Pikachu
 from ball import Ball
 
 def handle_events():
@@ -27,6 +28,11 @@ def reset_world():
     ball = Ball(400, 300)
 
     game_world.add_object(ball, 1)
+
+    pikachu = Pikachu()
+
+    game_world.add_object(pikachu, 1)
+
 
 def update_world():
     game_world.update()
