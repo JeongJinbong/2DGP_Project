@@ -1,7 +1,10 @@
-from pico2d import load_image
+from pico2d import load_image, get_time
+from sdl2 import SDLK_SPACE, SDL_KEYDOWN
+
 
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
@@ -11,6 +14,7 @@ class Idle:
     @staticmethod
     def enter(pikachu):
         pikachu.frame = 5
+        pikachu.wait_time = get_time()
 
     @staticmethod
     def exit(pikachu):
@@ -20,11 +24,14 @@ class Idle:
     def do(pikachu):
         pikachu.frame = (pikachu.frame - 1)
         if pikachu.frame < 0:
-            pikachu.frame =5
+            pikachu.frame = 5
+        if get_time() - pikachu.wait_time > 2:
+            pikachu.state_machine.handle_event(('TIME_OUT', 0))
 
     @staticmethod
     def draw(pikachu):
         pikachu.image.clip_draw(2 + pikachu.frame * 66, 885 - 1 - 332, 66, 66, pikachu.x, pikachu.y, 132, 132)
+
 
 class Slide:
 
@@ -51,6 +58,10 @@ class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
         self.cur_state = Idle
+        self.transitions = {
+            Slide: {enter_down: Idle},
+            Idle: {time_out: Slide}
+        }
 
     def start(self):
         self.cur_state.enter(self.pikachu)
@@ -60,6 +71,16 @@ class StateMachine:
 
     def draw(self):
         self.cur_state.draw(self.pikachu)
+
+    def handle_event(self, e):
+        for check_event, next_state in self.transitions[self.cur_state].items():
+            if check_event(e):
+                self.cur_state.exit(self.pikachu)
+                self.cur_state = next_state
+                self.cur_state.enter(self.pikachu)
+                return True
+
+            return False
 
 
 class Pikachu:
