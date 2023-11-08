@@ -1,5 +1,11 @@
 from pico2d import load_image
 
+def enter_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
+def time_out(e):
+    return e[0] == 'TIME_OUT'
+
 
 class Idle:
     @staticmethod
@@ -15,6 +21,26 @@ class Idle:
         pikachu.frame = (pikachu.frame - 1)
         if pikachu.frame < 0:
             pikachu.frame =5
+
+    @staticmethod
+    def draw(pikachu):
+        pikachu.image.clip_draw(2 + pikachu.frame * 66, 885 - 1 - 332, 66, 66, pikachu.x, pikachu.y, 132, 132)
+
+class Slide:
+
+    @staticmethod
+    def enter(pikachu):
+        pikachu.frame = 5
+
+    @staticmethod
+    def exit(pikachu):
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        pikachu.frame = (pikachu.frame - 1)
+        if pikachu.frame < 0:
+            pikachu.frame = 5
 
     @staticmethod
     def draw(pikachu):
