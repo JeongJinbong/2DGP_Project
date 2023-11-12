@@ -1,7 +1,8 @@
 from pico2d import *
-from Map import Map
+
+from map import Map
 import game_world
-from Pikachu import Pikachu
+from pikachu import Pikachu
 from ball import Ball
 
 def handle_events():
@@ -14,8 +15,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             Running = False
         else:
-            Pikachu.handle_event(event)
-
+            pikachu.handle_event(event)
 
 def reset_world():
     global Running
@@ -55,5 +55,7 @@ while Running:
     update_world()
     render_world()
     delay(0.1)
+
+
 # finalization code
 close_canvas()
