@@ -1,61 +1,98 @@
 from pico2d import load_image, get_time
-from sdl2 import SDLK_SPACE, SDL_KEYDOWN, SDLK_RETURN
+from sdl2 import SDLK_SPACE, SDL_KEYDOWN, SDLK_RETURN, SDLK_RIGHT, SDLK_LEFT
 
 
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
 
 
-def enter_down(e):
+def space_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
+def right_down(e):
+ return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
+
+def right_up(e):
+ return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
+
+def left_down(e):
+ return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+def left_up(e):
+ return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
 
 class Idle:
     @staticmethod
-    def enter(pikachu):
-        pikachu.frame = 4
-        pikachu.wait_time = get_time()
+    def enter(pikachu,e):
+        pikachu.frame = 0
+        pikachu.action = 6
 
     @staticmethod
-    def exit(pikachu):
+    def exit(pikachu,e):
         pass
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame - 1)
-        if pikachu.frame < 0:
-            pikachu.frame = 4
-        if get_time() - pikachu.wait_time > 2:
-            pikachu.state_machine.handle_event(('TIME_OUT', 0))
+        pikachu.frame = (pikachu.frame + 1) % 5
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(2 + pikachu.frame * 66, 885 - 1 - 332, 66, 66, pikachu.x, pikachu.y, 132, 132)
+        pikachu.image.clip_draw(pikachu.frame * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 130, 132)
 
 
 class Slide:
 
     @staticmethod
-    def enter(pikachu):
-        pikachu.frame = 4
+    def enter(pikachu,e):
+        pikachu.frame = 0
+        pikachu.action = 3
+        pikachu.wait_time = get_time()
+
 
     @staticmethod
-    def exit(pikachu):
+    def exit(pikachu,e):
         pass
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame - 1)
-        if pikachu.frame < 0:
-            pikachu.frame = 4
+        pikachu.frame = (pikachu.frame + 1) % 3
+        if get_time() - pikachu.wait_time > 2:
+            pikachu.state_machine.handle_event(('TIME_OUT', 0))
+
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(2 + pikachu.frame * 66, 885 - 1 - 332, 66, 66, pikachu.x, pikachu.y, 132, 132)
+        pikachu.image.clip_draw(pikachu.frame * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 130, 132)
+
+
+class Run:
+    @staticmethod
+    def enter(pikachu,e):
+        if right_down(e) or left_up(e): # 오른쪽으로 Run
+            pikachu.dir = 1
+        elif left_down(e) or right_up(e):  # 왼쪽으로 Run
+            pikachu.dir = -1
+
+    @staticmethod
+    def exit(pikachu,e):
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        pikachu.frame = (pikachu.frame + 1) % 5
+        pikachu.x += pikachu.dir * 5
+        pass
+
+    @staticmethod
+    def draw(pikachu):
+        pikachu.image.clip_draw(pikachu.frame * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 130, 132)
+
 
 
 class StateMachine:
@@ -63,10 +100,10 @@ class StateMachine:
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Slide: {enter_down: Idle},
-            Idle: {time_out: Slide}
+            Slide: {time_out: Idle},
+            Idle: {space_down: Slide},
+            Run: {right_down:Idle, left_down: Idle, right_up:Idle, left_up:Idle}
         }
-
     def start(self):
         self.cur_state.enter(self.pikachu)
 
@@ -83,7 +120,6 @@ class StateMachine:
                 self.cur_state = next_state
                 self.cur_state.enter(self.pikachu)
                 return True
-
             return False
 
 
@@ -91,18 +127,18 @@ class Pikachu:
     image = None
 
     def __init__(self):
-        self.x, self.y = 0, 90
+        self.x, self.y = 50, 110
         self.frame = 0
         if Pikachu.image == None:
-            Pikachu.image = load_image('Resource/Image/sprite_sheet.png')
+            Pikachu.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+
+    def handle_event(self, event):
+        pass
 
     def update(self):
         self.state_machine.update()
 
     def draw(self):
         self.state_machine.draw()
-
-    def handle_event(self, event):
-        pass
