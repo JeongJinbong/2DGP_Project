@@ -1,12 +1,16 @@
 objects = [[], []]
+
+
 # layer 0 : Background Object
 # layer 1 : Foreground Object
 
 def add_object(o, depth=0):
     objects[depth].append(o)
 
-def add_objects(ol, depth = 0):
+
+def add_objects(ol, depth=0):
     objects[depth] += ol
+
 
 def update():
     for layer in objects:
