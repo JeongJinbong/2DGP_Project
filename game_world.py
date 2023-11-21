@@ -1,8 +1,5 @@
-objects = [[], []]
+objects = [[] for _ in range(4)]
 
-
-# layer 0 : Background Object
-# layer 1 : Foreground Object
 
 def add_object(o, depth=0):
     objects[depth].append(o)
@@ -29,4 +26,9 @@ def remove_object(o):
         if o in layer:
             layer.remove(o)
             return
-    raise ValueError('존재하지 않는 객체를 지울 수 없음')
+    raise ValueError('Cannot delete non existing object')
+
+
+def clear():
+    for layer in objects:
+        layer.clear()

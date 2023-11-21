@@ -1,5 +1,7 @@
 from pico2d import *
 
+import game_framework
+import title_mode
 from map import Map
 import game_world
 from pikachu import Pikachu
@@ -7,25 +9,20 @@ from ball import Ball
 
 
 def handle_events():
-    global running
-
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
-            running = False
+            game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            running = False
+            game_framework.change_mode(title_mode)
         else:
             pikachu.handle_event(event)
 
 
 def init():
-    global running
     global BackGround
     global pikachu
     global ball
-
-    running = True
 
     BackGround = Map()
     game_world.add_object(BackGround, 0)
@@ -38,7 +35,7 @@ def init():
 
 
 def finish():
-    pass
+    game_world.clear()
 
 
 def update():
@@ -50,16 +47,9 @@ def draw():
     game_world.render()
     update_canvas()
 
+def pause():
+    pass
 
-open_canvas()
-init()
-# game loop
+def resume():
+    pass
 
-while running:
-    handle_events()
-    update()
-    draw()
-    delay(0.1)
-finish()
-# finalization code
-close_canvas()
