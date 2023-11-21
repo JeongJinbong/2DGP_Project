@@ -1,17 +1,12 @@
-from pico2d import load_image, get_time
-from sdl2 import SDLK_SPACE, SDL_KEYDOWN, SDLK_RETURN, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP
+from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
+from sdl2 import SDLK_RETURN
+
+import game_world
+import game_framework
 
 
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
-
-
-def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
-
-
-def time_out(e):
-    return e[0] == 'TIME_OUT'
 
 
 def right_down(e):
@@ -28,6 +23,14 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
+def space_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
+
+def time_out(e):
+    return e[0] == 'TIME_OUT'
 
 
 class Idle:
@@ -57,6 +60,7 @@ class Slide:
         pikachu.frame = 0
         pikachu.wait_time = get_time()
         pikachu.action = 3
+
     @staticmethod
     def exit(pikachu, e):
         pass
@@ -102,7 +106,7 @@ class StateMachine:
         self.transitions = {
             Slide: {time_out: Idle},
             Idle: {space_down: Slide, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
-            Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
+            Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}
         }
 
     def start(self):
@@ -121,7 +125,8 @@ class StateMachine:
                 self.cur_state = next_state
                 self.cur_state.enter(self.pikachu, e)
                 return True
-            return False
+
+        return False
 
 
 class Pikachu:
@@ -132,8 +137,7 @@ class Pikachu:
         self.frame = 0
         self.action = 6
         self.dir = 0
-        if Pikachu.image == None:
-            Pikachu.image = load_image('Resource/Image/pikachu.png')
+        self.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
