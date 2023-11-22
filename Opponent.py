@@ -124,7 +124,7 @@ class StateMachine:
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Slide: {time_out: Idle, right_down: Slide, left_down: Slide, left_up: Slide, right_up: Slide},
+            Slide: {time_out: Idle},
             Idle: {space_down: Slide, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
             Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}
         }
@@ -149,7 +149,7 @@ class StateMachine:
         return False
 
 
-class Pikachu:
+class Opponent:
     image = None
 
     def __init__(self):
