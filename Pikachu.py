@@ -4,6 +4,22 @@ from sdl2 import SDLK_RETURN
 import game_world
 import game_framework
 
+# Pikachu Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km/ Hour
+RUN_SPEED_MPH = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPH / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+# Pikachu Action Speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 5
+
+# Pikachu Slide Action Speed
+SLIDE_TIME_PER_ACTION = 1.0
+SLIDE_ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+SLIDE_FRAMES_PER_ACTION = 3
 
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
@@ -46,11 +62,11 @@ class Idle:
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame + 1) % 5
+        pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(pikachu.frame * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
+        pikachu.image.clip_draw(int(pikachu.frame) * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
 
 
 class Slide:
@@ -67,13 +83,14 @@ class Slide:
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame + 1) % 3
-        if get_time() - pikachu.wait_time > 0.3:
+        pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
+        if get_time() - pikachu.wait_time > 0.5:
             pikachu.state_machine.handle_event(('TIME_OUT', 0))
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(pikachu.frame * 64, pikachu.action * 66 + 9, 64, 65, pikachu.x, pikachu.y, 104, 105)
+        pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
+                                105)
 
 
 class Run:
@@ -90,13 +107,13 @@ class Run:
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame + 1) % 5
-        pikachu.x += pikachu.dir * 5
+        pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+        pikachu.x += pikachu.dir * RUN_SPEED_PPS * game_framework.frame_time
         pass
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(pikachu.frame * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
+        pikachu.image.clip_draw(int(pikachu.frame) * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
 
 
 class StateMachine:
@@ -104,7 +121,7 @@ class StateMachine:
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Slide: {time_out: Idle},
+            Slide: {time_out: Idle, right_down: Slide, left_down: Slide, left_up: Slide, right_up: Slide},
             Idle: {space_down: Slide, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
             Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}
         }
