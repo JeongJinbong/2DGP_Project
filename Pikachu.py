@@ -1,5 +1,5 @@
 from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
-from sdl2 import SDLK_RETURN
+from sdl2 import SDLK_RETURN, SDLK_UP, SDLK_DOWN
 
 import game_world
 import game_framework
@@ -21,6 +21,7 @@ SLIDE_TIME_PER_ACTION = 1.0
 SLIDE_ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 SLIDE_FRAMES_PER_ACTION = 3
 
+
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
 
@@ -39,6 +40,30 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
+def _down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+
+def left_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
+def upkey_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
+
+
+def upkey_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_UP
+
+
+def downkey_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_DOWN
+
+
+def downkey_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_DOWN
 
 
 def space_down(e):
@@ -81,12 +106,41 @@ class Slide:
     def exit(pikachu, e):
         pikachu.dir = 0
 
-
     @staticmethod
     def do(pikachu):
         pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
         if get_time() - pikachu.wait_time > 0.5:
             pikachu.state_machine.handle_event(('TIME_OUT', 0))
+
+    @staticmethod
+    def draw(pikachu):
+        pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
+                                105)
+
+
+class jump:
+
+    @staticmethod
+    def enter(pikachu, e):
+        pikachu.frame = 0
+        pikachu.wait_time = get_time()
+        pikachu.action = 3
+
+    @staticmethod
+    def exit(pikachu, e):
+        pikachu.velocity = 7
+
+    @staticmethod
+    def do(pikachu):
+        pikachu.frame = (
+                                    pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
+        if pikachu.velocity > 0:
+            F = (0.5 * pikachu.mass * (pikachu.velocity * pikachu.velocity))
+        else:
+            F = -(0.5 * pikachu.mass * (pikachu.velocity * pikachu.velocity))
+        pikachu.y -= round(F)
+
+        pikachu.velocity -= 1
 
     @staticmethod
     def draw(pikachu):
@@ -113,7 +167,7 @@ class Run:
         if pikachu.x > 350:
             pikachu.x = 350
         elif pikachu.x < 54:
-            pikachu. x = 54
+            pikachu.x = 54
 
     @staticmethod
     def draw(pikachu):
@@ -158,6 +212,8 @@ class Pikachu:
         self.frame = 0
         self.action = 6
         self.dir = 0
+        self.velocity = 7
+        self.mass = 2
         self.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()

@@ -28,7 +28,7 @@ def init():
     game_world.add_object(BackGround, 0)
 
     ball = Ball(400, 300)
-    game_world.add_object(ball, 1)
+    game_world.add_object(ball, 2)
 
     pikachu = Pikachu()
     game_world.add_object(pikachu, 1)
