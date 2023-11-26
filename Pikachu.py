@@ -79,7 +79,8 @@ class Slide:
 
     @staticmethod
     def exit(pikachu, e):
-        pass
+        pikachu.dir = 0
+
 
     @staticmethod
     def do(pikachu):
