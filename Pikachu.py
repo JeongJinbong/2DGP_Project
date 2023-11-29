@@ -40,9 +40,20 @@ JUMP_SPEED_MPH = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
 JUMP_SPEED_MPS = (JUMP_SPEED_MPH / 60.0)
 JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
 
+PressRight = False
+
 
 def enter_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
+
+
+def right_stay(e):
+    global PressRight
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT:
+        PressRight = True
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT:
+        PressRight = True
+    return PressRight
 
 
 def right_down(e):
@@ -157,7 +168,6 @@ class Slide:
     @staticmethod
     def enter(pikachu, e):
         pikachu.frame = 0
-        pikachu.wait_time = get_time()
         pikachu.action = 3
         pikachu.velocity_y = 5
 
@@ -167,7 +177,8 @@ class Slide:
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
+        pikachu.frame = (
+                                    pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
         pikachu.velocity_y = pikachu.velocity_y + pikachu.gravity * SLIDE_SPEED_PPS * game_framework.frame_time
         pikachu.y = pikachu.y + pikachu.velocity_y * SLIDE_SPEED_PPS * game_framework.frame_time
 
@@ -178,6 +189,7 @@ class Slide:
     def draw(pikachu):
         pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
                                 105)
+
 
 class Jump:
 
@@ -211,8 +223,7 @@ class StateMachine:
         self.cur_state = Idle
         self.transitions = {
             Slide: {on_land: Idle},
-            Idle: {space_down: Slide, right_down: RunRight, left_down: RunLeft, left_up: RunRight, right_up: RunLeft,
-                   upkey_down: Jump},
+            Idle: {space_down: Slide, right_down: RunRight, left_down: RunLeft, upkey_down: Jump, right_stay: RunRight},
             RunRight: {space_down: Slide, right_up: Idle, left_down: Idle, upkey_down: Jump},
             RunLeft: {space_down: Slide, left_up: Idle, right_down: Idle, upkey_down: Jump},
             Jump: {on_land: Idle}
@@ -262,6 +273,7 @@ class Pikachu:
         self.state_machine.handle_event(('INPUT', event))
 
     def update(self):
+        self.state_machine.handle_event(('None', ()))
         self.state_machine.update()
 
     def draw(self):
