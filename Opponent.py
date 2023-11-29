@@ -91,34 +91,6 @@ class Slide:
     def draw(pikachu):
         pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
                                 105)
-
-
-class Run:
-    @staticmethod
-    def enter(pikachu, e):
-        if right_down(e) or left_up(e):  # 오른쪽으로 RUN
-            pikachu.dir, pikachu.action = 1, 6
-        elif left_down(e) or right_up(e):  # 왼쪽으로 RUN
-            pikachu.dir, pikachu.action = -1, 6
-
-    @staticmethod
-    def exit(pikachu, e):
-        pass
-
-    @staticmethod
-    def do(pikachu):
-        pikachu.frame = (pikachu.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
-        pikachu.x += pikachu.dir * RUN_SPEED_PPS * game_framework.frame_time
-        if pikachu.x > 350:
-            pikachu.x = 350
-        elif pikachu.x < 54:
-            pikachu. x = 54
-
-    @staticmethod
-    def draw(pikachu):
-        pikachu.image.clip_draw(int(pikachu.frame) * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
-
-
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
