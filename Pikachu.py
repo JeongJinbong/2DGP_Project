@@ -17,9 +17,23 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 5
 
 # Pikachu Slide Action Speed
-SLIDE_TIME_PER_ACTION = 1.0
-SLIDE_ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+SLIDE_TIME_PER_ACTION = 0.5
+SLIDE_ACTION_PER_TIME = 1.0 / SLIDE_TIME_PER_ACTION
 SLIDE_FRAMES_PER_ACTION = 3
+
+# Pikachu Jump Action Speed
+JUMP_TIME_PER_ACTION = 0.25
+JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
+JUMP_FRAMES_PER_ACTION = 3
+
+# Pikachu JUMP Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+JUMP_SPEED_KMPH = 10.0  # Km/ Hour
+JUMP_SPEED_MPH = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
+JUMP_SPEED_MPS = (JUMP_SPEED_MPH / 60.0)
+JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
+
+
 
 
 def enter_down(e):
@@ -41,13 +55,6 @@ def left_down(e):
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
-
-def _down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
-
-
-def left_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
 
 def upkey_down(e):
@@ -72,6 +79,9 @@ def space_down(e):
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
+
+def on_land(e):
+    return e[0] == 'ON_LAND'
 
 
 class Idle:
@@ -118,34 +128,31 @@ class Slide:
                                 105)
 
 
-class jump:
+class Jump:
 
     @staticmethod
     def enter(pikachu, e):
         pikachu.frame = 0
         pikachu.wait_time = get_time()
-        pikachu.action = 3
+        pikachu.action = 5
 
     @staticmethod
     def exit(pikachu, e):
-        pikachu.velocity = 7
+        pikachu.velocity_y = 11
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (
-                                    pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
-        if pikachu.velocity > 0:
-            F = (0.5 * pikachu.mass * (pikachu.velocity * pikachu.velocity))
-        else:
-            F = -(0.5 * pikachu.mass * (pikachu.velocity * pikachu.velocity))
-        pikachu.y -= round(F)
+        pikachu.frame = (pikachu.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
+        pikachu.velocity_y = pikachu.velocity_y + pikachu.gravity * RUN_SPEED_PPS * game_framework.frame_time
+        pikachu.y = pikachu.y + pikachu.velocity_y * RUN_SPEED_PPS * game_framework.frame_time
 
-        pikachu.velocity -= 1
+        if pikachu.y <= 110:
+            pikachu.state_machine.handle_event(('ON_LAND', 0))
+
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
-                                105)
+        pikachu.image.clip_draw(int(pikachu.frame) * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
 
 
 class Run:
@@ -179,9 +186,10 @@ class StateMachine:
         self.pikachu = pikachu
         self.cur_state = Idle
         self.transitions = {
-            Slide: {time_out: Idle},
-            Idle: {space_down: Slide, right_down: Run, left_down: Run, left_up: Run, right_up: Run},
-            Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}
+            Slide: {on_land: Idle},
+            Idle: {space_down: Slide, right_down: Run, left_down: Run, left_up: Run, right_up: Run,upkey_down:Jump},
+            Run: {space_down: Slide, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle,upkey_down:Jump},
+            Jump: {on_land : Idle}
         }
 
     def start(self):
@@ -212,8 +220,9 @@ class Pikachu:
         self.frame = 0
         self.action = 6
         self.dir = 0
-        self.velocity = 7
-        self.mass = 2
+        self.gravity = -0.25
+        self.velocity_y = 11.0
+
         self.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
@@ -226,3 +235,9 @@ class Pikachu:
 
     def draw(self):
         self.state_machine.draw()
+
+    def get_bb(self):
+        pass
+
+    def handle_collision(self,group, other):
+        pass

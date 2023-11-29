@@ -25,7 +25,7 @@ class Ball:
         self.gravity = -0.25
         self.radius = 40
         self.elasticity = 1.0
-        self.velocity_x = 1.0
+        self.velocity_x = 0.0
         self.velocity_y= 1.0
 
     def draw(self):

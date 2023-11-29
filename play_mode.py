@@ -27,7 +27,7 @@ def init():
     BackGround = Map()
     game_world.add_object(BackGround, 0)
 
-    ball = Ball(400, 300)
+    ball = Ball(50, 500)
     game_world.add_object(ball, 2)
 
     pikachu = Pikachu()
