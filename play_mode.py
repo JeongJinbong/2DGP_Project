@@ -40,7 +40,8 @@ def finish():
 
 def update():
     game_world.update()
-
+    if game_world.collide(pikachu,ball):
+        print('COLLISION pikachu:ball')
 
 def draw():
     clear_canvas()

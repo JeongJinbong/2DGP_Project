@@ -57,4 +57,5 @@ class Ball:
             if self.velocity_x <= 0:
                 self.velocity_x *= -1.0 * self.elasticity
 
-
+    def get_bb(self):
+        return self.x - 10, self.y -10, self.x+10, self.y+ 10
