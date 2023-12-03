@@ -1,12 +1,12 @@
 from pico2d import load_image, draw_rectangle
 
-import ball
 import game_framework
 import game_world
+import score
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km/ Hour
+RUN_SPEED_KMPH = 13.0  # Km/ Hour
 RUN_SPEED_MPH = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPH / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -23,7 +23,7 @@ class Ball:
         self.image = load_image('Resource/Image/ball.png')
         self.x, self.y = x, y
         self.frame = 0
-        self.gravity = -0.1
+        self.gravity = -0.25
         self.radius = 40
         self.elasticity = 1.0
         self.velocity_x = 0.0
@@ -68,9 +68,16 @@ class Ball:
                 self.velocity_x = 1.5
                 self.velocity_y *= -1.0
                 self.y += 3
+
             case 'ball:net':
                 self.velocity_x *= 1.0
                 self.velocity_y *= -1.0
                 self.y += 3
+
+            case 'ball:leftnet':
+                self.velocity_x *= -1.0
+
+            case 'ball:rightnet':
+                self.velocity_x *= -1.0
 
 

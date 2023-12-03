@@ -57,12 +57,15 @@ def add_collision_pair(group, a, b):
     if b:
         collision_pairs[group][1].append(b)
 
+
 def remove_collision_object(o):
     for pairs in collision_pairs.values():
         if o in pairs[0]:
             pairs[0].remove(o)
         if o in pairs[1]:
             pairs[1].remove(o)
+
+
 def remove_object(o):
     for layer in objects:
         if o in layer:
@@ -77,7 +80,6 @@ def handle_collisions():
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:
             for b in pairs[1]:
-                if collide(a,b):
-                    a.handle_collision(group,b)
+                if collide(a, b):
+                    a.handle_collision(group, b)
                     b.handle_collision(group, a)
-

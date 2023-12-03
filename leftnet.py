@@ -1,7 +1,7 @@
 from pico2d import draw_rectangle, load_image
 
 
-class Net:
+class Leftnet:
 
     def __init__(self):
         self.image = load_image('Resource/Image/ball.png')
@@ -11,7 +11,7 @@ class Net:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 12, self.y +140, self.x + 10, self.y + 150
+        return self.x - 12, self.y -50, self.x , self.y + 140
 
     def update(self):
         pass
@@ -20,3 +20,4 @@ class Net:
         match group:
             case 'ball:net':
                 pass
+
