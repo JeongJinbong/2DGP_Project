@@ -1,5 +1,6 @@
-from pico2d import load_image
+from pico2d import load_image, draw_rectangle
 
+import ball
 import game_framework
 import game_world
 
@@ -22,7 +23,7 @@ class Ball:
         self.image = load_image('Resource/Image/ball.png')
         self.x, self.y = x, y
         self.frame = 0
-        self.gravity = -0.25
+        self.gravity = -0.1
         self.radius = 40
         self.elasticity = 1.0
         self.velocity_x = 0.0
@@ -30,6 +31,7 @@ class Ball:
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 40, 40, 40, 80, self.x, self.y, 80, 80)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
@@ -58,4 +60,17 @@ class Ball:
                 self.velocity_x *= -1.0 * self.elasticity
 
     def get_bb(self):
-        return self.x - 10, self.y -10, self.x+10, self.y+ 10
+        return self.x - 40, self.y -40, self.x+40, self.y+ 40
+
+    def handle_collision(self, group, other):
+        match group:
+            case 'pikachu:ball':
+                self.velocity_x = 1.5
+                self.velocity_y *= -1.0
+                self.y += 3
+            case 'ball:net':
+                self.velocity_x *= 1.0
+                self.velocity_y *= -1.0
+                self.y += 3
+
+

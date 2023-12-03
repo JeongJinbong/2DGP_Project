@@ -6,6 +6,8 @@ from map import Map
 import game_world
 from pikachu import Pikachu
 from ball import Ball
+from net import Net
+from score import Score
 
 
 def handle_events():
@@ -23,6 +25,8 @@ def init():
     global BackGround
     global pikachu
     global ball
+    global net
+    global score
 
     BackGround = Map()
     game_world.add_object(BackGround, 0)
@@ -33,6 +37,15 @@ def init():
     pikachu = Pikachu()
     game_world.add_object(pikachu, 1)
 
+    net = Net()
+    game_world.add_object(net, 0)
+
+    score = Score()
+    game_world.add_object(score, 0)
+
+    game_world.add_collision_pair('pikachu:ball', pikachu, ball)
+    game_world.add_collision_pair('ball:net', ball, net)
+
 
 def finish():
     game_world.clear()
@@ -40,8 +53,8 @@ def finish():
 
 def update():
     game_world.update()
-    if game_world.collide(pikachu,ball):
-        print('COLLISION pikachu:ball')
+    game_world.handle_collisions()
+
 
 def draw():
     clear_canvas()

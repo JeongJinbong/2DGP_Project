@@ -1,4 +1,5 @@
-from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
+from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
+    draw_rectangle
 from sdl2 import SDLK_RETURN, SDLK_UP, SDLK_DOWN
 
 import game_world
@@ -6,7 +7,7 @@ import game_framework
 
 # Pikachu Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km/ Hour
+RUN_SPEED_KMPH = 30.0  # Km/ Hour
 RUN_SPEED_MPH = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPH / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -105,6 +106,7 @@ def space_down(e):
 def time_out(e):
     return e[0] == 'TIME_OUT'
 
+
 def on_land(e):
     return e[0] == 'ON_LAND'
 
@@ -186,7 +188,8 @@ class Slide:
 
     @staticmethod
     def do(pikachu):
-        pikachu.frame = (pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time) % 3
+        pikachu.frame = ((pikachu.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time)
+                         % 3)
         pikachu.velocity_y = pikachu.velocity_y + pikachu.gravity * SLIDE_SPEED_PPS * game_framework.frame_time
         pikachu.y = pikachu.y + pikachu.velocity_y * SLIDE_SPEED_PPS * game_framework.frame_time
 
@@ -195,9 +198,12 @@ class Slide:
 
     @staticmethod
     def draw(pikachu):
-        pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
+        if pikachu.dir >= 0.0:
+            pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, pikachu.x, pikachu.y, 104,
                                 105)
-
+        elif pikachu.dir < 0.0:
+            pikachu.image.clip_composite_draw(int(pikachu.frame) * 64, pikachu.action * 70, 64, 62, 0, 'h', pikachu.x,
+                                              pikachu.y, 104, 105)
 
 class Jump:
 
@@ -231,7 +237,7 @@ class StateMachine:
         self.cur_state = Idle
         self.transitions = {
             Slide: {on_land: Idle},
-            Idle: {space_down: Slide, right_down: RunRight, left_down: RunLeft,upkey_down: Jump, right_stay: RunRight,
+            Idle: {space_down: Slide, right_down: RunRight, left_down: RunLeft, upkey_down: Jump, right_stay: RunRight,
                    left_stay: RunLeft},
             RunRight: {space_down: Slide, right_up: Idle, left_down: Idle, upkey_down: Jump},
             RunLeft: {space_down: Slide, left_up: Idle, right_down: Idle, upkey_down: Jump},
@@ -290,7 +296,11 @@ class Pikachu:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x- 50, self.y -50, self.x + 50, self.y + 50
+        return self.x - 45, self.y - 45, self.x + 45, self.y + 45
 
     def handle_collision(self, group, other):
-        pass
+        match group:
+            case 'pikachu:ball':
+                pass
+
+
