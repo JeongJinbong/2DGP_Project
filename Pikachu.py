@@ -259,8 +259,6 @@ class Spike:
         pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 68, 65, 64, pikachu.x, pikachu.y+5, 104, 105)
 
 
-
-
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu

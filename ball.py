@@ -3,7 +3,7 @@ from pico2d import load_image, draw_rectangle, delay
 import game_framework
 import game_world
 import score
-from pikachu import Slide, RunLeft, RunRight,Idle,Jump
+from pikachu import Slide, RunLeft, RunRight,Idle,Jump,Spike
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -93,6 +93,10 @@ class Ball:
                 elif other.state_machine.cur_state == Slide:
                     self.velocity_x = 0.0
                     self.velocity_y *= -1.0
+                    self.y += 3
+                elif other.state_machine.cur_state == Spike:
+                    self.velocity_x = 8.0
+                    self.velocity_y *= -0.25
                     self.y += 3
 
             case 'ball:net':
