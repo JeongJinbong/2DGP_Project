@@ -70,45 +70,69 @@ class Ball:
                     self.velocity_x = 1.5
                     self.velocity_y *= -1.0
                     self.y += 3
+                    self.gravity = -0.25
+
                 elif other.state_machine.cur_state == RunLeft:
                     self.velocity_x = -1.5
                     self.velocity_y *= -1.0
                     self.y += 3
+                    self.gravity = -0.25
+
                 elif other.state_machine.cur_state == Idle:
                     self.velocity_x = 1.0
                     self.velocity_y *= -1.0
                     self.y += 3
+                    self.gravity = -0.25
+
                 elif other.state_machine.cur_state == Jump:
                     if other.dir > 0.0:
                         self.velocity_x = 1.5
                         self.velocity_y *= -1.0
                         self.y += 5
+                        self.gravity = -0.25
+
                     elif other.dir == 0.0:
                         self.velocity_y *= -1.0
                         self.y += 5
+                        self.gravity = -0.25
+
                     elif other.dir < 0.0:
                         self.velocity_x = -1.5
                         self.velocity_y *= -1.0
                         self.y += 5
+                        self.gravity = -0.25
+
                 elif other.state_machine.cur_state == Slide:
                     self.velocity_x = 0.0
                     self.velocity_y *= -1.0
                     self.y += 3
+                    self.gravity = -0.2
+
                 elif other.state_machine.cur_state == Spike:
-                    self.velocity_x = 8.0
-                    self.velocity_y *= -0.25
+                    self.velocity_x = 12.0
+                    self.velocity_y *= -1.0
+                    self.gravity = -0.4
                     self.y += 3
 
             case 'ball:net':
                 self.velocity_x *= 1.0
                 self.velocity_y *= -1.0
-                self.y += 3
+                self.y += 2
+                self.gravity *= 1.0
 
             case 'ball:leftnet':
                 self.velocity_x *= -1.0
+                self.gravity *= 1.0
 
             case 'ball:rightnet':
                 self.velocity_x *= -1.0
+                self.gravity *= 1.0
+
+            case 'enemy:ball':
+                self.velocity_x = -1.5
+                self.velocity_y *= -1.0
+                self.y += 5
+                self.gravity = -0.25
 
     def serve_p1(self):
         self.x, self.y = 50, 500

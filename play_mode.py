@@ -10,7 +10,7 @@ from net import Net
 from leftnet import Leftnet
 from rightnet import Rightnet
 from score import Score
-
+from enemy import Enemy
 
 PAUSE_DURATION = 0.5
 slow_motion_time = None
@@ -29,11 +29,10 @@ def handle_events():
 
 
 def init():
-    global BackGround
     global pikachu
     global ball
-    global net
     global score
+    global enemy
 
     BackGround = Map()
     game_world.add_object(BackGround, 0)
@@ -56,10 +55,14 @@ def init():
     score = Score()
     game_world.add_object(score, 0)
 
+    enemy = Enemy()
+    game_world.add_object(enemy,1)
+
     game_world.add_collision_pair('pikachu:ball', pikachu, ball)
     game_world.add_collision_pair('ball:net', ball, net)
     game_world.add_collision_pair('ball:leftnet', ball, leftnet)
     game_world.add_collision_pair('ball:rightnet', ball, rightnet)
+    game_world.add_collision_pair('enemy:ball', enemy, ball)
 
 
 def finish():
@@ -85,11 +88,13 @@ def update():
             score.player2_score += 1
             ball.serve_p1()
             pikachu.init_position()
+            enemy.init_position()
+
         elif ball.x > 400:
             score.player1_score += 1
             ball.serve_p2()
             pikachu.init_position()
-
+            enemy.init_position()
 def draw():
     clear_canvas()
     game_world.render()

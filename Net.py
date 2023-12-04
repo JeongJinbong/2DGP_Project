@@ -11,7 +11,7 @@ class Net:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 12, self.y +140, self.x + 10, self.y + 150
+        return self.x - 12, self.y +150, self.x + 10, self.y + 160
 
     def update(self):
         pass
