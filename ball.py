@@ -1,4 +1,4 @@
-from pico2d import load_image, draw_rectangle
+from pico2d import load_image, draw_rectangle, delay
 
 import game_framework
 import game_world
@@ -47,17 +47,17 @@ class Ball:
             if self.velocity_x >= 0:
                 self.velocity_x *= -1.0 * self.elasticity
 
-        if self.y <= 0 + self.radius:
-            self.y = 0 + self.radius
-
-            if self.velocity_y <= 0:
-                self.velocity_y *= -1.0 * self.elasticity
-
         if self.x <= 0 + self.radius:
             self.x = 0 + self.radius
 
             if self.velocity_x <= 0:
                 self.velocity_x *= -1.0 * self.elasticity
+
+        if self.y <= 60 + self.radius:
+            self.velocity_x *= 0.1  # 공의 속도를 줄임
+            self.velocity_y *= 0.1
+            self.gravity *= 0.1  # 중력도 줄임
+
 
     def get_bb(self):
         return self.x - 40, self.y -40, self.x+40, self.y+ 40
@@ -80,4 +80,21 @@ class Ball:
             case 'ball:rightnet':
                 self.velocity_x *= -1.0
 
+    def serve_p1(self):
+        self.x, self.y = 50, 500
+        self.frame = 0
+        self.gravity = -0.25
+        self.radius = 40
+        self.elasticity = 1.0
+        self.velocity_x = 0.0
+        self.velocity_y = 1.0
+
+    def serve_p2(self):
+        self.x, self.y = 750, 500
+        self.frame = 0
+        self.gravity = -0.25
+        self.radius = 40
+        self.elasticity = 1.0
+        self.velocity_x = 0.0
+        self.velocity_y = 1.0
 

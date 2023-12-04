@@ -12,6 +12,11 @@ from rightnet import Rightnet
 from score import Score
 
 
+PAUSE_DURATION = 0.5
+slow_motion_time = None
+is_paused = False
+
+
 def handle_events():
     events = get_events()
     for event in events:
@@ -62,13 +67,28 @@ def finish():
 
 
 def update():
+    global slow_motion_time, is_paused
+
     game_world.update()
     game_world.handle_collisions()
-    if ball.y <= 0 + ball.radius:
+
+    if ball.y <= 60 + ball.radius and not is_paused:
+        # Apply pause or slow-motion effect
+        is_paused = True
+        slow_motion_time = get_time()
+
+    # If there is an active slow-motion effect, check the elapsed time
+    if is_paused and get_time() - slow_motion_time >= PAUSE_DURATION:
+        is_paused = False  # Reset the pause state
+
         if ball.x <= 400:
             score.player1_score += 1
+            ball.serve_p1()
+            pikachu.init_position()
         elif ball.x > 400:
             score.player2_score += 1
+            ball.serve_p2()
+            pikachu.init_position()
 
 def draw():
     clear_canvas()
@@ -82,3 +102,5 @@ def pause():
 
 def resume():
     pass
+
+

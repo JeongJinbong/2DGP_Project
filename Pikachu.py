@@ -215,7 +215,7 @@ class Jump:
 
     @staticmethod
     def exit(pikachu, e):
-        pikachu.velocity_y = 11
+        pikachu.velocity_y = 11 
 
     @staticmethod
     def do(pikachu):
@@ -303,4 +303,6 @@ class Pikachu:
             case 'pikachu:ball':
                 pass
 
+    def init_position(self):
+        self. x = 50
 

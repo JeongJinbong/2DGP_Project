@@ -1,0 +1,306 @@
+from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
+    draw_rectangle
+from sdl2 import SDLK_RETURN, SDLK_UP, SDLK_DOWN
+
+import game_world
+import game_framework
+
+# enemy Run Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 30.0  # Km/ Hour
+RUN_SPEED_MPH = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPH / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+# enemy Action Speed
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 5
+
+# enemy Slide Action Speed
+SLIDE_TIME_PER_ACTION = 0.75
+SLIDE_ACTION_PER_TIME = 1.0 / SLIDE_TIME_PER_ACTION
+SLIDE_FRAMES_PER_ACTION = 3
+
+# enemy SLIDE Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+SLIDE_SPEED_KMPH = 10.0  # Km/ Hour
+SLIDE_SPEED_MPH = (SLIDE_SPEED_KMPH * 1000.0 / 60.0)
+SLIDE_SPEED_MPS = (SLIDE_SPEED_MPH / 60.0)
+SLIDE_SPEED_PPS = (SLIDE_SPEED_MPS * PIXEL_PER_METER)
+
+# enemy Jump Action Speed
+JUMP_TIME_PER_ACTION = 0.25
+JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
+JUMP_FRAMES_PER_ACTION = 3
+
+# enemy JUMP Speed
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+JUMP_SPEED_KMPH = 10.0  # Km/ Hour
+JUMP_SPEED_MPH = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
+JUMP_SPEED_MPS = (JUMP_SPEED_MPH / 60.0)
+JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
+
+PressRight = False
+PressLeft = False
+
+
+def enter_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RETURN
+
+
+def right_stay(e):
+    global PressRight
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT:
+        PressRight = True
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT:
+        PressRight = False
+    return PressRight
+
+
+def left_stay(e):
+    global PressLeft
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT:
+        PressLeft = True
+    if e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT:
+        PressLeft = False
+    return PressLeft
+
+
+def right_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
+
+
+def right_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
+
+
+def left_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+
+def left_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
+def upkey_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
+
+
+def upkey_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_UP
+
+
+def downkey_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_DOWN
+
+
+def downkey_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_DOWN
+
+
+def space_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
+
+
+def time_out(e):
+    return e[0] == 'TIME_OUT'
+
+
+def on_land(e):
+    return e[0] == 'ON_LAND'
+
+
+class Idle:
+    @staticmethod
+    def enter(enemy, e):
+        enemy.frame = 0
+        enemy.action = 6
+        enemy.dir = 0
+        enemy.speed = 0
+
+    @staticmethod
+    def exit(enemy, e):
+        pass
+
+    @staticmethod
+    def do(enemy):
+        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+
+    @staticmethod
+    def draw(enemy):
+        enemy.image.clip_draw(int(enemy.frame) * 65, enemy.action * 66, 65, 66, enemy.x, enemy.y, 104, 105)
+
+
+class RunRight:
+    @staticmethod
+    def enter(enemy, e):
+        enemy.dir = 1
+        enemy.speed = RUN_SPEED_PPS
+        enemy.action = 6
+        enemy.frame = 0
+
+    @staticmethod
+    def exit(enemy, e):
+        pass
+
+    @staticmethod
+    def do(enemy):
+        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+
+    @staticmethod
+    def draw(enemy):
+        enemy.image.clip_draw(int(enemy.frame) * 65, enemy.action * 66, 65, 66, enemy.x, enemy.y, 104, 105)
+
+
+class RunLeft:
+    @staticmethod
+    def enter(enemy, e):
+        enemy.dir = -1
+        enemy.speed = RUN_SPEED_PPS
+        enemy.action = 6
+        enemy.frame = 0
+
+    @staticmethod
+    def exit(enemy, e):
+        pass
+
+    @staticmethod
+    def do(enemy):
+        enemy.frame = (enemy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
+
+    @staticmethod
+    def draw(enemy):
+        enemy.image.clip_draw(int(enemy.frame) * 65, enemy.action * 66, 65, 66, enemy.x, enemy.y, 104, 105)
+
+
+class Slide:
+
+    @staticmethod
+    def enter(enemy, e):
+        enemy.frame = 0
+        enemy.action = 3
+        enemy.velocity_y = 5
+
+    @staticmethod
+    def exit(enemy, e):
+        enemy.velocity_y = 11
+
+    @staticmethod
+    def do(enemy):
+        enemy.frame = ((enemy.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time)
+                         % 3)
+        enemy.velocity_y = enemy.velocity_y + enemy.gravity * SLIDE_SPEED_PPS * game_framework.frame_time
+        enemy.y = enemy.y + enemy.velocity_y * SLIDE_SPEED_PPS * game_framework.frame_time
+
+        if enemy.y <= 110:
+            enemy.state_machine.handle_event(('ON_LAND', 0))
+
+    @staticmethod
+    def draw(enemy):
+        if enemy.dir >= 0.0:
+            enemy.image.clip_draw(int(enemy.frame) * 64, enemy.action * 70, 64, 62, enemy.x, enemy.y, 104,
+                                105)
+        elif enemy.dir < 0.0:
+            enemy.image.clip_composite_draw(int(enemy.frame) * 64, enemy.action * 70, 64, 62, 0, 'h', enemy.x,
+                                              enemy.y, 104, 105)
+
+class Jump:
+
+    @staticmethod
+    def enter(enemy, e):
+        enemy.frame = 0
+        enemy.wait_time = get_time()
+        enemy.action = 5
+
+    @staticmethod
+    def exit(enemy, e):
+        enemy.velocity_y = 11
+
+    @staticmethod
+    def do(enemy):
+        enemy.frame = (enemy.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
+        enemy.velocity_y = enemy.velocity_y + enemy.gravity * JUMP_SPEED_PPS * game_framework.frame_time
+        enemy.y = enemy.y + enemy.velocity_y * JUMP_SPEED_PPS * game_framework.frame_time
+
+        if enemy.y <= 110:
+            enemy.state_machine.handle_event(('ON_LAND', 0))
+
+    @staticmethod
+    def draw(enemy):
+        enemy.image.clip_draw(int(enemy.frame) * 65, enemy.action * 66, 65, 66, enemy.x, enemy.y, 104, 105)
+
+
+class StateMachine:
+    def __init__(self, enemy):
+        self.enemy = enemy
+        self.cur_state = Idle
+        self.transitions = {
+            Slide: {on_land: Idle},
+            Idle: {space_down: Slide, right_down: RunRight, left_down: RunLeft, upkey_down: Jump, right_stay: RunRight,
+                   left_stay: RunLeft},
+            RunRight: {space_down: Slide, right_up: Idle, left_down: Idle, upkey_down: Jump},
+            RunLeft: {space_down: Slide, left_up: Idle, right_down: Idle, upkey_down: Jump},
+            Jump: {on_land: Idle}
+        }
+
+    def start(self):
+        self.cur_state.enter(self.enemy, ('NONE', 0))
+
+    def update(self):
+        self.cur_state.do(self.enemy)
+        self.enemy.x += self.enemy.dir * self.enemy.speed * game_framework.frame_time
+        if self.enemy.x > 350:
+            self.enemy.x = 350
+        elif self.enemy.x < 54:
+            self.enemy.x = 54
+
+    def draw(self):
+        self.cur_state.draw(self.enemy)
+
+    def handle_event(self, e):
+        for check_event, next_state in self.transitions[self.cur_state].items():
+            if check_event(e):
+                self.cur_state.exit(self.enemy, e)
+                self.cur_state = next_state
+                self.cur_state.enter(self.enemy, e)
+                return True
+
+        return False
+
+
+class Enemy:
+    image = None
+
+    def __init__(self):
+        self.x, self.y = 50, 110
+        self.frame = 0
+        self.action = 6
+        self.dir = 0
+        self.gravity = -0.25
+        self.velocity_y = 11.0
+
+        self.image = load_image('Resource/Image/enemy.png')
+        self.state_machine = StateMachine(self)
+        self.state_machine.start()
+
+    def handle_event(self, event):
+        self.state_machine.handle_event(('INPUT', event))
+
+    def update(self):
+        self.state_machine.handle_event(('None', ()))
+        self.state_machine.update()
+
+    def draw(self):
+        self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.x - 45, self.y - 45, self.x + 45, self.y + 45
+
+    def handle_collision(self, group, other):
+        match group:
+            case 'enemy:ball':
+                pass
+
+
