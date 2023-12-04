@@ -79,6 +79,7 @@ def update():
         # Apply pause or slow-motion effect
         is_paused = True
         slow_motion_time = get_time()
+        Ball.score_ball_sound.play()
 
     # If there is an active slow-motion effect, check the elapsed time
     if is_paused and get_time() - slow_motion_time >= PAUSE_DURATION:
@@ -95,6 +96,9 @@ def update():
             ball.serve_p2()
             pikachu.init_position()
             enemy.init_position()
+
+    if score.player1_score >= 10 or score.player2_score >= 10:
+        game_framework.change_mode(title_mode)
 def draw():
     clear_canvas()
     game_world.render()

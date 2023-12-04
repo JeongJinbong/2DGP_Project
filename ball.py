@@ -1,9 +1,9 @@
-from pico2d import load_image, draw_rectangle, delay
+from pico2d import load_image, draw_rectangle, delay, load_wav
 
 import game_framework
 import game_world
 import score
-from pikachu import Slide, RunLeft, RunRight,Idle,Jump,Spike
+from pikachu import Slide, RunLeft, RunRight, Idle, Jump, Spike
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -19,6 +19,8 @@ FRAMES_PER_ACTION = 5
 
 
 class Ball:
+    spike_ball_sound = None
+    score_ball_sound = None
 
     def __init__(self, x=400, y=300):
         self.image = load_image('Resource/Image/ball.png')
@@ -28,7 +30,13 @@ class Ball:
         self.radius = 40
         self.elasticity = 1.0
         self.velocity_x = 0.0
-        self.velocity_y= 1.0
+        self.velocity_y = 1.0
+
+        if not Ball.spike_ball_sound:
+            Ball.spike_ball_sound = load_wav('Resource/Sound/WAVE145.wav')
+            Ball.score_ball_sound = load_wav('Resource/Sound/WAVE146.wav')
+            Ball.spike_ball_sound.set_volume(32)
+            Ball.score_ball_sound.set_volume(32)
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 40, 40, 40, 80, self.x, self.y, 80, 80)
@@ -59,9 +67,8 @@ class Ball:
             self.velocity_y *= 0.1
             self.gravity *= 0.1  # 중력도 줄임
 
-
     def get_bb(self):
-        return self.x - 40, self.y -40, self.x+40, self.y+ 40
+        return self.x - 40, self.y - 40, self.x + 40, self.y + 40
 
     def handle_collision(self, group, other):
         match group:
@@ -109,6 +116,7 @@ class Ball:
                     self.gravity = -0.2
 
                 elif other.state_machine.cur_state == Spike:
+                    Ball.spike_ball_sound.play()
                     self.velocity_x = 12.0
                     self.velocity_y *= -1.0
                     self.gravity = -0.4
@@ -151,4 +159,3 @@ class Ball:
         self.elasticity = 1.0
         self.velocity_x = 0.0
         self.velocity_y = 1.0
-

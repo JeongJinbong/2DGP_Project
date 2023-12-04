@@ -100,9 +100,9 @@ class Enemy:
     def move_to_ball(self, r=1):
         self.state = 'Walk'
         if self.x > play_mode.ball.x:
-            self.move_slightly_to(play_mode.ball.x-100, play_mode.ball.y)
+            self.move_slightly_to(play_mode.ball.x-200, play_mode.ball.y)
         elif self.x < play_mode.ball.x:
-            self.move_slightly_to(play_mode.ball.x+100, play_mode.ball.y)
+            self.move_slightly_to(play_mode.ball.x+200, play_mode.ball.y)
 
         if self.distance_less_than(play_mode.ball.x, play_mode.ball.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
@@ -116,7 +116,7 @@ class Enemy:
             return BehaviorTree.FAIL
 
     def build_behavior_tree(self):
-        c1 = Condition("공이 근처에 있는가?", self.is_ball_nearby,30)
+        c1 = Condition("공이 근처에 있는가?", self.is_ball_nearby,15)
         a1 = Action("공으로 이동",self.move_to_ball)
 
         root = SEQ_chase_ball = Sequence("공을 추적", c1, a1)

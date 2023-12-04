@@ -1,5 +1,5 @@
 from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
-    draw_rectangle
+    draw_rectangle, load_wav
 from sdl2 import SDLK_RETURN, SDLK_UP, SDLK_DOWN
 
 import game_world
@@ -181,6 +181,8 @@ class Slide:
         pikachu.frame = 0
         pikachu.action = 3
         pikachu.velocity_y = 5
+        pikachu.slide_sound.play()
+
 
     @staticmethod
     def exit(pikachu, e):
@@ -237,6 +239,7 @@ class Spike:
         pikachu.frame = 0
         pikachu.wait_time = get_time()
         pikachu.action = 4
+        pikachu.spike_sound.play()
 
     @staticmethod
     def exit(pikachu, e):
@@ -300,6 +303,8 @@ class StateMachine:
 
 class Pikachu:
     image = None
+    spike_sound= None
+    slide_sound= None
 
     def __init__(self):
         self.x, self.y = 50, 110
@@ -311,6 +316,12 @@ class Pikachu:
         self.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+
+        if not Pikachu.spike_sound:
+            Pikachu.spike_sound = load_wav('Resource/Sound/WAVE141.wav')
+            Pikachu.slide_sound = load_wav('Resource/Sound/WAVE142.wav')
+            Pikachu.slide_sound.set_volume(32)
+            Pikachu.spike_sound.set_volume(32)
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
