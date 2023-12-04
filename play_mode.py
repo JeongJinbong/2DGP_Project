@@ -82,11 +82,11 @@ def update():
         is_paused = False  # Reset the pause state
 
         if ball.x <= 400:
-            score.player1_score += 1
+            score.player2_score += 1
             ball.serve_p1()
             pikachu.init_position()
         elif ball.x > 400:
-            score.player2_score += 1
+            score.player1_score += 1
             ball.serve_p2()
             pikachu.init_position()
 

@@ -3,6 +3,7 @@ from pico2d import load_image, draw_rectangle, delay
 import game_framework
 import game_world
 import score
+from pikachu import Slide, RunLeft, RunRight,Idle,Jump
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -65,9 +66,34 @@ class Ball:
     def handle_collision(self, group, other):
         match group:
             case 'pikachu:ball':
-                self.velocity_x = 1.5
-                self.velocity_y *= -1.0
-                self.y += 3
+                if other.state_machine.cur_state == RunRight:
+                    self.velocity_x = 1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                elif other.state_machine.cur_state == RunLeft:
+                    self.velocity_x = -1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                elif other.state_machine.cur_state == Idle:
+                    self.velocity_x = 1.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                elif other.state_machine.cur_state == Jump:
+                    if other.dir > 0.0:
+                        self.velocity_x = 1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                    elif other.dir == 0.0:
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                    elif other.dir < 0.0:
+                        self.velocity_x = -1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                elif other.state_machine.cur_state == Slide:
+                    self.velocity_x = 0.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
 
             case 'ball:net':
                 self.velocity_x *= 1.0

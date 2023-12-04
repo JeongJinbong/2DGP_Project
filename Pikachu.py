@@ -212,11 +212,10 @@ class Jump:
         pikachu.frame = 0
         pikachu.wait_time = get_time()
         pikachu.action = 5
-
     @staticmethod
     def exit(pikachu, e):
-        pikachu.velocity_y = 11 
-
+        if on_land(e):
+            pikachu.velocity_y = 11
     @staticmethod
     def do(pikachu):
         pikachu.frame = (pikachu.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
@@ -231,6 +230,37 @@ class Jump:
         pikachu.image.clip_draw(int(pikachu.frame) * 65, pikachu.action * 66, 65, 66, pikachu.x, pikachu.y, 104, 105)
 
 
+class Spike:
+
+    @staticmethod
+    def enter(pikachu, e):
+        pikachu.frame = 0
+        pikachu.wait_time = get_time()
+        pikachu.action = 4
+
+    @staticmethod
+    def exit(pikachu, e):
+        pass
+
+    @staticmethod
+    def do(pikachu):
+        pikachu.frame = (pikachu.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
+        pikachu.velocity_y = pikachu.velocity_y + pikachu.gravity * JUMP_SPEED_PPS * game_framework.frame_time
+        pikachu.y = pikachu.y + pikachu.velocity_y * JUMP_SPEED_PPS * game_framework.frame_time
+
+        if pikachu.y <= 110:
+            pikachu.state_machine.handle_event(('ON_LAND', 0))
+
+        if get_time() - pikachu.wait_time > 0.5:
+            pikachu.state_machine.handle_event(('TIME_OUT', 0))
+
+    @staticmethod
+    def draw(pikachu):
+        pikachu.image.clip_draw(int(pikachu.frame) * 64, pikachu.action * 68, 65, 64, pikachu.x, pikachu.y+5, 104, 105)
+
+
+
+
 class StateMachine:
     def __init__(self, pikachu):
         self.pikachu = pikachu
@@ -241,7 +271,8 @@ class StateMachine:
                    left_stay: RunLeft},
             RunRight: {space_down: Slide, right_up: Idle, left_down: Idle, upkey_down: Jump},
             RunLeft: {space_down: Slide, left_up: Idle, right_down: Idle, upkey_down: Jump},
-            Jump: {on_land: Idle}
+            Jump: {on_land: Idle, space_down: Spike},
+            Spike: {on_land: Idle, time_out: Jump}
         }
 
     def start(self):
@@ -279,7 +310,6 @@ class Pikachu:
         self.dir = 0
         self.gravity = -0.25
         self.velocity_y = 11.0
-
         self.image = load_image('Resource/Image/pikachu.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
