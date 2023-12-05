@@ -78,8 +78,6 @@ class Enemy:
         self.image.clip_composite_draw(int(self.frame) * 65, self.action * 66, 65, 66, 0, 'h', self.x,
                                        self.y, 104, 105)
 
-        draw_rectangle(*self.get_bb())
-
     def handle_event(self, event):
         pass
 
@@ -97,7 +95,7 @@ class Enemy:
         self.speed = RUN_SPEED_PPS
         self.x += (self.speed * math.cos(self.dir) * game_framework.frame_time)
 
-    def move_to_ball(self, r=1):
+    def move_to_ball(self, r=0.5):
         self.state = 'Walk'
         if self.x > play_mode.ball.x:
             self.move_slightly_to(play_mode.ball.x-200, play_mode.ball.y)

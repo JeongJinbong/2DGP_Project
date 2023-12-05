@@ -8,8 +8,7 @@ class Leftnet:
         self.x, self.y = 400, 100
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
-
+        pass
     def get_bb(self):
         return self.x - 12, self.y -50, self.x , self.y + 140
 

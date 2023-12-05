@@ -4,6 +4,8 @@ import game_framework
 import game_world
 import score
 from pikachu import Slide, RunLeft, RunRight, Idle, Jump, Spike
+from player1 import Slide, RunLeft, RunRight, Idle, Jump, Spike
+from player2 import Slide, RunLeft, RunRight, Idle, Jump, Spike
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -40,7 +42,6 @@ class Ball:
 
     def draw(self):
         self.image.clip_draw(int(self.frame) * 40, 40, 40, 80, self.x, self.y, 80, 80)
-        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
@@ -72,6 +73,25 @@ class Ball:
 
     def handle_collision(self, group, other):
         match group:
+            case 'ball:net':
+                self.velocity_x *= 1.0
+                self.velocity_y *= -1.0
+                self.y += 2
+                self.gravity *= 1.0
+
+            case 'ball:leftnet':
+                self.velocity_x *= -1.0
+                self.gravity *= 1.0
+
+            case 'ball:rightnet':
+                self.velocity_x *= -1.0
+                self.gravity *= 1.0
+
+            case 'enemy:ball':
+                self.velocity_x = -1.5
+                self.velocity_y *= -1.0
+                self.y += 5
+                self.gravity = -0.25
             case 'pikachu:ball':
                 if other.state_machine.cur_state == RunRight:
                     self.velocity_x = 1.5
@@ -121,26 +141,104 @@ class Ball:
                     self.velocity_y *= -1.0
                     self.gravity = -0.4
                     self.y += 3
+            case 'player1:ball':
+                if other.state_machine.cur_state == RunRight:
+                    self.velocity_x = 1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
 
-            case 'ball:net':
-                self.velocity_x *= 1.0
-                self.velocity_y *= -1.0
-                self.y += 2
-                self.gravity *= 1.0
+                elif other.state_machine.cur_state == RunLeft:
+                    self.velocity_x = -1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
 
-            case 'ball:leftnet':
-                self.velocity_x *= -1.0
-                self.gravity *= 1.0
+                elif other.state_machine.cur_state == Idle:
+                    self.velocity_x = 1.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
 
-            case 'ball:rightnet':
-                self.velocity_x *= -1.0
-                self.gravity *= 1.0
+                elif other.state_machine.cur_state == Jump:
+                    if other.dir > 0.0:
+                        self.velocity_x = 1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
 
-            case 'enemy:ball':
-                self.velocity_x = -1.5
-                self.velocity_y *= -1.0
-                self.y += 5
-                self.gravity = -0.25
+                    elif other.dir == 0.0:
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
+
+                    elif other.dir < 0.0:
+                        self.velocity_x = -1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
+
+                elif other.state_machine.cur_state == Slide:
+                    self.velocity_x = 0.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.2
+
+                elif other.state_machine.cur_state == Spike:
+                    Ball.spike_ball_sound.play()
+                    self.velocity_x = 12.0
+                    self.velocity_y *= -1.0
+                    self.gravity = -0.4
+                    self.y += 3
+            case 'player2:ball':
+                if other.state_machine.cur_state == RunRight:
+                    self.velocity_x = 1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
+
+                elif other.state_machine.cur_state == RunLeft:
+                    self.velocity_x = -1.5
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
+
+                elif other.state_machine.cur_state == Idle:
+                    self.velocity_x = 1.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.25
+
+                elif other.state_machine.cur_state == Jump:
+                    if other.dir > 0.0:
+                        self.velocity_x = 1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
+
+                    elif other.dir == 0.0:
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
+
+                    elif other.dir < 0.0:
+                        self.velocity_x = -1.5
+                        self.velocity_y *= -1.0
+                        self.y += 5
+                        self.gravity = -0.25
+
+                elif other.state_machine.cur_state == Slide:
+                    self.velocity_x = 0.0
+                    self.velocity_y *= -1.0
+                    self.y += 3
+                    self.gravity = -0.2
+
+                elif other.state_machine.cur_state == Spike:
+                    Ball.spike_ball_sound.play()
+                    self.velocity_x = 12.0
+                    self.velocity_y *= -1.0
+                    self.gravity = -0.4
+                    self.y += 3
 
     def serve_p1(self):
         self.x, self.y = 50, 500

@@ -1,5 +1,5 @@
-from pico2d import get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, \
-    draw_rectangle, load_wav
+from pico2d import (get_time, load_image, load_font, clamp, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT,
+                    draw_rectangle, load_wav)
 from sdl2 import SDLK_RETURN, SDLK_UP, SDLK_DOWN
 
 import game_world
@@ -332,7 +332,6 @@ class Pikachu:
 
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 45, self.y - 45, self.x + 45, self.y + 45
