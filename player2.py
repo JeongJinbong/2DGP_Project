@@ -17,29 +17,29 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 5
 
-# player2 Slide Action Speed
-SLIDE_TIME_PER_ACTION = 0.75
-SLIDE_ACTION_PER_TIME = 1.0 / SLIDE_TIME_PER_ACTION
-SLIDE_FRAMES_PER_ACTION = 3
+# player2 Player2Slide Action Speed
+Player2Slide_TIME_PER_ACTION = 0.75
+Player2Slide_ACTION_PER_TIME = 1.0 / Player2Slide_TIME_PER_ACTION
+Player2Slide_FRAMES_PER_ACTION = 3
 
-# player2 SLIDE Speed
+# player2 Player2Slide Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-SLIDE_SPEED_KMPH = 10.0  # Km/ Hour
-SLIDE_SPEED_MPH = (SLIDE_SPEED_KMPH * 1000.0 / 60.0)
-SLIDE_SPEED_MPS = (SLIDE_SPEED_MPH / 60.0)
-SLIDE_SPEED_PPS = (SLIDE_SPEED_MPS * PIXEL_PER_METER)
+Player2Slide_SPEED_KMPH = 10.0  # Km/ Hour
+Player2Slide_SPEED_MPH = (Player2Slide_SPEED_KMPH * 1000.0 / 60.0)
+Player2Slide_SPEED_MPS = (Player2Slide_SPEED_MPH / 60.0)
+Player2Slide_SPEED_PPS = (Player2Slide_SPEED_MPS * PIXEL_PER_METER)
 
-# player2 Jump Action Speed
-JUMP_TIME_PER_ACTION = 0.25
-JUMP_ACTION_PER_TIME = 1.0 / JUMP_TIME_PER_ACTION
-JUMP_FRAMES_PER_ACTION = 3
+# player2 Player2Jump Action Speed
+Player2Jump_TIME_PER_ACTION = 0.25
+Player2Jump_ACTION_PER_TIME = 1.0 / Player2Jump_TIME_PER_ACTION
+Player2Jump_FRAMES_PER_ACTION = 3
 
-# player2 JUMP Speed
+# player2 Player2Jump Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-JUMP_SPEED_KMPH = 10.0  # Km/ Hour
-JUMP_SPEED_MPH = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
-JUMP_SPEED_MPS = (JUMP_SPEED_MPH / 60.0)
-JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
+Player2Jump_SPEED_KMPH = 10.0  # Km/ Hour
+Player2Jump_SPEED_MPH = (Player2Jump_SPEED_KMPH * 1000.0 / 60.0)
+Player2Jump_SPEED_MPS = (Player2Jump_SPEED_MPH / 60.0)
+Player2Jump_SPEED_PPS = (Player2Jump_SPEED_MPS * PIXEL_PER_METER)
 
 PressRight = False
 PressLeft = False
@@ -111,7 +111,7 @@ def on_land(e):
     return e[0] == 'ON_LAND'
 
 
-class Idle:
+class Player2Idle:
     @staticmethod
     def enter(player2, e):
         player2.frame = 0
@@ -132,7 +132,7 @@ class Idle:
         player2.image.clip_composite_draw(int(player2.frame) * 65, player2.action * 66, 65, 66, 0, 'h',
                                           player2.x, player2.y, 104, 105)
 
-class RunRight:
+class Player2RunRight:
     @staticmethod
     def enter(player2, e):
         player2.dir = 1
@@ -153,7 +153,7 @@ class RunRight:
         player2.image.clip_composite_draw(int(player2.frame) * 65, player2.action * 66, 65, 66, 0, 'h',
                                           player2.x, player2.y, 104, 105)
 
-class RunLeft:
+class Player2RunLeft:
     @staticmethod
     def enter(player2, e):
         player2.dir = -1
@@ -174,14 +174,14 @@ class RunLeft:
         player2.image.clip_composite_draw(int(player2.frame) * 65, player2.action * 66, 65, 66,0, 'h' ,
                                           player2.x, player2.y, 104, 105)
 
-class Slide:
+class Player2Slide:
 
     @staticmethod
     def enter(player2, e):
         player2.frame = 0
         player2.action = 3
         player2.velocity_y = 5
-        player2.slide_sound.play()
+        player2.Player2Slide_sound.play()
 
 
     @staticmethod
@@ -190,10 +190,10 @@ class Slide:
 
     @staticmethod
     def do(player2):
-        player2.frame = ((player2.frame + SLIDE_FRAMES_PER_ACTION * SLIDE_ACTION_PER_TIME * game_framework.frame_time)
+        player2.frame = ((player2.frame + Player2Slide_FRAMES_PER_ACTION * Player2Slide_ACTION_PER_TIME * game_framework.frame_time)
                          % 3)
-        player2.velocity_y = player2.velocity_y + player2.gravity * SLIDE_SPEED_PPS * game_framework.frame_time
-        player2.y = player2.y + player2.velocity_y * SLIDE_SPEED_PPS * game_framework.frame_time
+        player2.velocity_y = player2.velocity_y + player2.gravity * Player2Slide_SPEED_PPS * game_framework.frame_time
+        player2.y = player2.y + player2.velocity_y * Player2Slide_SPEED_PPS * game_framework.frame_time
 
         if player2.y <= 110:
             player2.state_machine.handle_event(('ON_LAND', 0))
@@ -207,7 +207,7 @@ class Slide:
             player2.image.clip_composite_draw(int(player2.frame) * 64, player2.action * 70, 64, 62, 0, 'h', player2.x,
                                               player2.y, 104, 105)
 
-class Jump:
+class Player2Jump:
 
     @staticmethod
     def enter(player2, e):
@@ -220,9 +220,9 @@ class Jump:
             player2.velocity_y = 11
     @staticmethod
     def do(player2):
-        player2.frame = (player2.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
-        player2.velocity_y = player2.velocity_y + player2.gravity * JUMP_SPEED_PPS * game_framework.frame_time
-        player2.y = player2.y + player2.velocity_y * JUMP_SPEED_PPS * game_framework.frame_time
+        player2.frame = (player2.frame + Player2Jump_FRAMES_PER_ACTION * Player2Jump_ACTION_PER_TIME * game_framework.frame_time) % 3
+        player2.velocity_y = player2.velocity_y + player2.gravity * Player2Jump_SPEED_PPS * game_framework.frame_time
+        player2.y = player2.y + player2.velocity_y * Player2Jump_SPEED_PPS * game_framework.frame_time
 
         if player2.y <= 110:
             player2.state_machine.handle_event(('ON_LAND', 0))
@@ -232,14 +232,14 @@ class Jump:
         player2.image.clip_composite_draw(int(player2.frame) * 65, player2.action * 66, 65, 66, 0, 'h',
                                           player2.x, player2.y, 104, 105)
 
-class Spike:
+class Player2Spike:
 
     @staticmethod
     def enter(player2, e):
         player2.frame = 0
         player2.wait_time = get_time()
         player2.action = 4
-        player2.spike_sound.play()
+        player2.Player2Spike_sound.play()
 
     @staticmethod
     def exit(player2, e):
@@ -247,9 +247,9 @@ class Spike:
 
     @staticmethod
     def do(player2):
-        player2.frame = (player2.frame + JUMP_FRAMES_PER_ACTION * JUMP_ACTION_PER_TIME * game_framework.frame_time) % 3
-        player2.velocity_y = player2.velocity_y + player2.gravity * JUMP_SPEED_PPS * game_framework.frame_time
-        player2.y = player2.y + player2.velocity_y * JUMP_SPEED_PPS * game_framework.frame_time
+        player2.frame = (player2.frame + Player2Jump_FRAMES_PER_ACTION * Player2Jump_ACTION_PER_TIME * game_framework.frame_time) % 3
+        player2.velocity_y = player2.velocity_y + player2.gravity * Player2Jump_SPEED_PPS * game_framework.frame_time
+        player2.y = player2.y + player2.velocity_y * Player2Jump_SPEED_PPS * game_framework.frame_time
 
         if player2.y <= 110:
             player2.state_machine.handle_event(('ON_LAND', 0))
@@ -265,15 +265,15 @@ class Spike:
 class StateMachine:
     def __init__(self, player2):
         self.player2 = player2
-        self.cur_state = Idle
+        self.cur_state = Player2Idle
         self.transitions = {
-            Slide: {on_land: Idle},
-            Idle: {enter_down: Slide, right_down: RunRight, left_down: RunLeft, upkey_down: Jump, right_stay: RunRight,
-                   left_stay: RunLeft},
-            RunRight: {enter_down: Slide, right_up: Idle, left_down: Idle, upkey_down: Jump},
-            RunLeft: {enter_down: Slide, left_up: Idle, right_down: Idle, upkey_down: Jump},
-            Jump: {on_land: Idle, enter_down: Spike},
-            Spike: {on_land: Idle, time_out: Jump}
+            Player2Slide: {on_land: Player2Idle},
+            Player2Idle: {enter_down: Player2Slide, right_down: Player2RunRight, left_down: Player2RunLeft, upkey_down: Player2Jump, right_stay: Player2RunRight,
+                   left_stay: Player2RunLeft},
+            Player2RunRight: {enter_down: Player2Slide, right_up: Player2Idle, left_down: Player2Idle, upkey_down: Player2Jump},
+            Player2RunLeft: {enter_down: Player2Slide, left_up: Player2Idle, right_down: Player2Idle, upkey_down: Player2Jump},
+            Player2Jump: {on_land: Player2Idle, enter_down: Player2Spike},
+            Player2Spike: {on_land: Player2Idle, time_out: Player2Jump}
         }
 
     def start(self):
@@ -303,8 +303,8 @@ class StateMachine:
 
 class Player2:
     image = None
-    spike_sound= None
-    slide_sound= None
+    Player2Spike_sound= None
+    Player2Slide_sound= None
 
     def __init__(self):
         self.x, self.y = 750, 110
@@ -317,11 +317,11 @@ class Player2:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
-        if not Player2.spike_sound:
-            Player2.spike_sound = load_wav('Resource/Sound/WAVE141.wav')
-            Player2.slide_sound = load_wav('Resource/Sound/WAVE142.wav')
-            Player2.slide_sound.set_volume(32)
-            Player2.spike_sound.set_volume(32)
+        if not Player2.Player2Spike_sound:
+            Player2.Player2Spike_sound = load_wav('Resource/Sound/WAVE141.wav')
+            Player2.Player2Slide_sound = load_wav('Resource/Sound/WAVE142.wav')
+            Player2.Player2Slide_sound.set_volume(32)
+            Player2.Player2Spike_sound.set_volume(32)
 
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))

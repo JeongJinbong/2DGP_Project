@@ -4,8 +4,8 @@ import game_framework
 import game_world
 import score
 from pikachu import Slide, RunLeft, RunRight, Idle, Jump, Spike
-from player1 import Slide, RunLeft, RunRight, Idle, Jump, Spike
-from player2 import Slide, RunLeft, RunRight, Idle, Jump, Spike
+from player1 import Player1Slide, Player1RunLeft, Player1RunRight, Player1Idle, Player1Jump, Player1Spike
+from player2 import Player2Slide, Player2RunLeft, Player2RunRight, Player2Idle, Player2Jump, Player2Spike
 
 # Ball Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -141,26 +141,27 @@ class Ball:
                     self.velocity_y *= -1.0
                     self.gravity = -0.4
                     self.y += 3
+
             case 'player1:ball':
-                if other.state_machine.cur_state == RunRight:
+                if other.state_machine.cur_state == Player1RunRight:
                     self.velocity_x = 1.5
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == RunLeft:
+                elif other.state_machine.cur_state == Player1RunLeft:
                     self.velocity_x = -1.5
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Idle:
+                elif other.state_machine.cur_state == Player1Idle:
                     self.velocity_x = 1.0
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Jump:
+                elif other.state_machine.cur_state == Player1Jump:
                     if other.dir > 0.0:
                         self.velocity_x = 1.5
                         self.velocity_y *= -1.0
@@ -178,38 +179,38 @@ class Ball:
                         self.y += 5
                         self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Slide:
+                elif other.state_machine.cur_state == Player1Slide:
                     self.velocity_x = 0.0
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.2
 
-                elif other.state_machine.cur_state == Spike:
+                elif other.state_machine.cur_state == Player1Spike:
                     Ball.spike_ball_sound.play()
                     self.velocity_x = 12.0
                     self.velocity_y *= -1.0
                     self.gravity = -0.4
                     self.y += 3
             case 'player2:ball':
-                if other.state_machine.cur_state == RunRight:
+                if other.state_machine.cur_state == Player2RunRight:
                     self.velocity_x = 1.5
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == RunLeft:
+                elif other.state_machine.cur_state == Player2RunLeft:
                     self.velocity_x = -1.5
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Idle:
+                elif other.state_machine.cur_state == Player2Idle:
                     self.velocity_x = 1.0
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Jump:
+                elif other.state_machine.cur_state == Player2Jump:
                     if other.dir > 0.0:
                         self.velocity_x = 1.5
                         self.velocity_y *= -1.0
@@ -227,15 +228,15 @@ class Ball:
                         self.y += 5
                         self.gravity = -0.25
 
-                elif other.state_machine.cur_state == Slide:
+                elif other.state_machine.cur_state == Player2Slide:
                     self.velocity_x = 0.0
                     self.velocity_y *= -1.0
                     self.y += 3
                     self.gravity = -0.2
 
-                elif other.state_machine.cur_state == Spike:
+                elif other.state_machine.cur_state == Player2Spike:
                     Ball.spike_ball_sound.play()
-                    self.velocity_x = 12.0
+                    self.velocity_x = -12.0
                     self.velocity_y *= -1.0
                     self.gravity = -0.4
                     self.y += 3
